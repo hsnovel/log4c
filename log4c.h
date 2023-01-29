@@ -149,8 +149,7 @@ extern "C" {
 #ifdef _MSC_VER
 #else
         time_t tx = time(NULL);
-        time_t tmp = time(0);
-        current_time = localtime_s(&tx, &tmp);
+        current_time = localtime(&tx);
 #endif
 
         char buf[16];
@@ -198,14 +197,14 @@ extern "C" {
         fflush((FILE*)_log_global_settings.terminal_descriptor); // Necesarry when debugging
 
         va_end(variadic_list);
-        //        if (_log_global_settings.thread_safe_initialized)
-        //        {
-        //#ifdef _MSC_VER
-        //            LeaveCriticalSection(&_log_global_settings.mutex);
-        //#else
-        //            pthread_mutex_unlock(&_log_global_settings.mutex);
-        //#endif
-        //        }
+               if (_log_global_settings.thread_safe_initialized)
+               {
+        #ifdef _MSC_VER
+                   LeaveCriticalSection(&_log_global_settings.mutex);
+        #else
+                   pthread_mutex_unlock(&_log_global_settings.mutex);
+        #endif
+               }
 
     }
 
