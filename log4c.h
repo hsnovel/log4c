@@ -210,11 +210,11 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	putc('\n', (FILE*)_log_global_settings.terminal_descriptor);
 
 	/*
-	 * Normaly terminals are line buffered but we of obviously:
+	 * Normaly terminals are line buffered but we obviously:
 	 *
 	 *   - cannot rely on that as file stream buffering modes might be
 	 *     set to something different by the programmer
-	 *   - cannot guarantte that the terminal will flush on a new line
+	 *   - cannot guarantee that the terminal will flush on a new line
 	 *
 	 * So we flush the file stream to prevent loss of logs.
 	 */
