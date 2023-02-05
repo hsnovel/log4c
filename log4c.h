@@ -137,10 +137,10 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	struct tm* current_time;
 	va_list variadic_list;
 
-	if (_log_global_settings.quiet)
-		_log_global_settings.terminal_descriptor = stdout;
-	else
+	if (_log_global_settings.quiet == 0)
 		_log_global_settings.terminal_descriptor = stderr;
+	else
+		_log_global_settings.terminal_descriptor = stdout;
 
 	if (level >= _log_global_settings.level)
 		scoped_level = level;
