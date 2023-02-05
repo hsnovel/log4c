@@ -15,7 +15,6 @@
  * LOG4C_ENABLE_BOLD_COLORS -> Enable bold colors
  */
 
-
 /*
  * Cannot get line numbers inside functions without specifiying them as
  * an argument in the function call. You have to #define them otherwise
@@ -71,7 +70,6 @@ static struct {
 	.thread_safe_initialized = 0,
 };
 
-
 static const char* _log_level_strings[] = {
 	"NOTAG", "OK", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
 };
@@ -95,9 +93,6 @@ inline static void log_disable_thread_safe()
 
 inline static void log_enable_thread_safe()
 {
-	/*
-	 * Create a thread mutex if it is not already created
-	 */
 	if (_log_global_settings.thread_safe_initialized == 0) {
 #ifdef _MSC_VER
 		InitializeCriticalSection(&_log_global_settings.mutex);
@@ -108,9 +103,6 @@ inline static void log_enable_thread_safe()
 	_log_global_settings.thread_safe_initialized = 1;
 }
 
-/*
- * If enabled does not print to stderr
- */
 inline static void log_set_quiet(unsigned int quiet)
 {
 	_log_global_settings.quiet = quiet;
@@ -133,8 +125,7 @@ inline static void log_disable_output_file()
 
 static void _log(int level, int line, const char* file_name, const char* args, ...)
 {
-	if (_log_global_settings.thread_safe_initialized)
-	{
+	if (_log_global_settings.thread_safe_initialized) {
 #ifdef _MSC_VER
 		EnterCriticalSection(&_log_global_settings.mutex);
 #else
@@ -147,14 +138,14 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	va_list variadic_list;
 
 	if (_log_global_settings.quiet)
-	_log_global_settings.terminal_descriptor = stdout;
+		_log_global_settings.terminal_descriptor = stdout;
 	else
-	_log_global_settings.terminal_descriptor = stderr;
+		_log_global_settings.terminal_descriptor = stderr;
 
 	if (level >= _log_global_settings.level)
-	scoped_level = level;
+		scoped_level = level;
 	else
-	scoped_level = _log_global_settings.level;
+		scoped_level = _log_global_settings.level;
 
 #ifdef _MSC_VER
 #else
@@ -185,9 +176,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 		file_name, line);
 #endif
 
-
-	if (_log_global_settings.file_descriptor)
-	{
+	if (_log_global_settings.file_descriptor) {
 		va_list file_list;
 		va_copy(file_list, variadic_list);
 #ifdef _MSC_VER
@@ -203,9 +192,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	}
 
 
-	/*
-	 * Print to terminal
-	 */
+	/* Print to terminal */
 	vfprintf((FILE*)_log_global_settings.terminal_descriptor, args, variadic_list);
 	putc('\n', (FILE*)_log_global_settings.terminal_descriptor);
 
@@ -222,8 +209,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	fflush((FILE*)_log_global_settings.terminal_descriptor);
 
 	va_end(variadic_list);
-	if (_log_global_settings.thread_safe_initialized)
-	{
+	if (_log_global_settings.thread_safe_initialized) {
 #ifdef _MSC_VER
 		LeaveCriticalSection(&_log_global_settings.mutex);
 #else
