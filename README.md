@@ -18,6 +18,7 @@ Preferance
 Logging functions
 ```cpp
 log_notag(...);
+log_ok(...);
 log_trace(...);
 log_debug(...);
 log_info(...);
