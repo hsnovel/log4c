@@ -199,7 +199,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	/*
 	 * Normaly terminals are line buffered but we obviously:
 	 *
-	 *   - cannot rely on that as file stream buffering modes might be
+	 *   - cannot rely on that as stream buffering mode might be
 	 *     set to something different by the programmer
 	 *   - cannot guarantee that the terminal will flush on a new line
 	 *
