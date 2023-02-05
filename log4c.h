@@ -11,7 +11,7 @@
 #endif
 
 /*
- * LOG4C_DISABLE_COLOR -> Enable colors
+ * LOG4C_DISABLE_COLOR -> Disable colors
  * LOG4C_ENABLE_BOLD_COLORS -> Enable bold colors
  */
 

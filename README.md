@@ -33,7 +33,7 @@ log_enable_thread_safe();   // Enables thread safety globally
 log_disable_thread_safe();  // Disables thread safety globally
 ```
 
-Quiet mode
+Quiet mode, set to 0 by default, set quiet to 1 enable.
 ```cpp
 log_set_quiet(unsigned int quiet); // If enabled do not print to stderr.
 ```
