@@ -120,7 +120,7 @@ inline static void log_append_file(const char *path)
 	_log_global_settings.file_descriptor = f;
 #else
 	FILE *f;
-	fopen_s(f, path, "a");
+	fopen_s(&f, path, "a");
 	_log_global_settings.file_descriptor = f;
 #endif
 }
