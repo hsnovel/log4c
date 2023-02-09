@@ -11,8 +11,8 @@ If you want to disable logging define ```LOG4C_DISABLE``` before including the l
 
 Preferance
 ```cpp
-#define LOG4C_DISABLE_COLOR      // Disable error codes to be printed with VT colors
-#define LOG4C_ENABLE_BOLD_COLORS // Works only if LOG4C_ENABLE_COLOR is not set 
+#define LOG4C_DISABLE_COLOR      /* Disable error codes to be printed with VT colors */
+#define LOG4C_ENABLE_BOLD_COLORS /* Works only if LOG4C_DISABLE_COLOR is not set */
 ```
 
 Logging functions
@@ -29,22 +29,26 @@ log_fatal(...);
 
 Thread safety
 ```cpp
-log_enable_thread_safe();   // Enables thread safety globally
-log_disable_thread_safe();  // Disables thread safety globally
+log_enable_thread_safe();   /* Enables thread safety globally  */
+log_disable_thread_safe();  /* Disables thread safety globally */
 ```
 
 Quiet mode, set to 0 by default, set quiet to 1 enable.
 ```cpp
-log_set_quiet(unsigned int quiet); // If enabled do not print to stderr.
+log_set_quiet(unsigned int quiet); /* If enabled do not print to stderr. */
 ```
 
-Set global warning level
+Set the minimum warning level.
 ```cpp
-log_set_level(int level); /* Set the minimum warning level. */
+log_set_level(int level);
 ```
 
-Output log to file
+Output log to file. Note if you use ```log_append_file``` it will open the file in the append mode to prevent
+loss of old data. If this is not what you want you can open the file in any mode you want and call
+```log_append_fp```
+
 ```cpp
-log_output_file(void *file_descriptor); // Pass a file pointer provided by the C standart library.
-log_disable_output_file();             // Remove file descriptor. Disable logging to file.
+log_append_file(const char *path);
+log_append_fp(FILE *file_descriptor);
+log_detach_fp(); /* Remove file descriptor. Disable logging to file. */
 ```

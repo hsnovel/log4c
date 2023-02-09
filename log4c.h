@@ -54,8 +54,8 @@ enum { LOG_NOTAG, LOG_OK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, L
 static struct {
 	int level;
 	unsigned int quiet;
-	void* terminal_descriptor;
-	void* file_descriptor;
+	FILE* terminal_descriptor;
+	FILE* file_descriptor;
 #ifdef _MSC_VER
 	CRITICAL_SECTION mutex;
 #else
@@ -65,7 +65,7 @@ static struct {
 } _log_global_settings = {
 	.level = LOG_NOTAG,
 	.quiet = 0,
-	.terminal_descriptor = (void*)0,
+	.terminal_descriptor = 0,
 	.file_descriptor = 0,
 	.thread_safe_initialized = 0,
 };
@@ -113,12 +113,24 @@ inline static void log_set_level(int level)
 	_log_global_settings.level = level;
 }
 
-inline static void log_output_file(void* file_descriptor)
+inline static void log_append_file(const char *path)
 {
-	_log_global_settings.file_descriptor = (FILE*)file_descriptor;
+#ifndef _WIN32
+	FILE *f = fopen(path, "a");
+	_log_global_settings.file_descriptor = f;
+#else
+	FILE *f;
+	fopen_s(f, path, "a");
+	_log_global_settings.file_descriptor = f;
+#endif
 }
 
-inline static void log_disable_output_file()
+inline static void log_append_fp(FILE* file_descriptor)
+{
+	_log_global_settings.file_descriptor = file_descriptor;
+}
+
+inline static void log_detach_fp()
 {
 	_log_global_settings.file_descriptor = NULL;
 }
@@ -165,14 +177,14 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 
 #if !defined(LOG4C_DISABLE_COLOR)
 #ifdef _MSC_VER
-	fprintf((FILE*)_log_global_settings.terminal_descriptor, "%d:%d:%d %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
+	fprintf(_log_global_settings.terminal_descriptor, "%d:%d:%d %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
 		LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
 #else
-	fprintf((FILE*)_log_global_settings.terminal_descriptor, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
+	fprintf(_log_global_settings.terminal_descriptor, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
 		buf, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
 #endif
 #else
-	fprintf((FILE*)_log_global_settings.terminal_descriptor, "%s %-5s %s:%d ", buf, _log_level_strings[scoped_level],
+	fprintf(_log_global_settings.terminal_descriptor, "%s %-5s %s:%d ", buf, _log_level_strings[scoped_level],
 		file_name, line);
 #endif
 
@@ -180,21 +192,21 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 		va_list file_list;
 		va_copy(file_list, variadic_list);
 #ifdef _MSC_VER
-		fprintf((FILE*)_log_global_settings.file_descriptor, "%d:%d:%d %-5s %s:%d: ",
+		fprintf(_log_global_settings.file_descriptor, "%d:%d:%d %-5s %s:%d: ",
 			LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, _log_level_strings[scoped_level], file_name, line);
 #else
-		fprintf((FILE*)_log_global_settings.file_descriptor, "%s %-5s %s:%d: ",
+		fprintf(_log_global_settings.file_descriptor, "%s %-5s %s:%d: ",
 			buf, _log_level_strings[scoped_level], file_name, line);
 #endif
-		vfprintf((FILE*)_log_global_settings.file_descriptor, args, file_list);
-		putc('\n', (FILE*)_log_global_settings.file_descriptor);
-		fflush((FILE*)_log_global_settings.file_descriptor);
+		vfprintf(_log_global_settings.file_descriptor, args, file_list);
+		putc('\n', _log_global_settings.file_descriptor);
+		fflush(_log_global_settings.file_descriptor);
 	}
 
 
 	/* Print to terminal */
-	vfprintf((FILE*)_log_global_settings.terminal_descriptor, args, variadic_list);
-	putc('\n', (FILE*)_log_global_settings.terminal_descriptor);
+	vfprintf(_log_global_settings.terminal_descriptor, args, variadic_list);
+	putc('\n', _log_global_settings.terminal_descriptor);
 
 	/*
 	 * Normaly terminals are line buffered but we obviously:
@@ -206,7 +218,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	 * So we flush the file stream to prevent loss of logs.
 	 */
 
-	fflush((FILE*)_log_global_settings.terminal_descriptor);
+	fflush(_log_global_settings.terminal_descriptor);
 
 	va_end(variadic_list);
 	if (_log_global_settings.thread_safe_initialized) {
