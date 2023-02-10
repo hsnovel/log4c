@@ -9,6 +9,9 @@ log4c is a single header thread safe fast logging library for C and C++.
 Do not put "\n" at the end of the logging functions, they are added by default. \
 If you want to disable logging define ```LOG4C_DISABLE``` before including the library.
 
+If ```LOG4C_RELEASE``` is defined, only print error message passed to the function,
+this mode disables logging to a file.
+
 Preferance
 ```cpp
 #define LOG4C_DISABLE_COLOR      /* Disable error codes to be printed with VT colors */
