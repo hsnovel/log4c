@@ -55,11 +55,9 @@
 
 #endif
 
-/*
- * #ifdef __cplusplus
- * extern "C" {
- * #endif
- */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 enum { LOG_NOTAG, LOG_OK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 
@@ -295,9 +293,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 
 #endif
 
-/*
- * #ifdef __cplusplus
- * }
- * #endif
- */
+#ifdef __cplusplus
+}
+#endif
 #endif
