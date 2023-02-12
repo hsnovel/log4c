@@ -222,7 +222,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 #endif
 
 	/*
-	 * Normaly terminals are line datefered but we obviously:
+	 * Normaly terminals are line buffered but we obviously:
 	 *
 	 *   - cannot rely on that as stream datefering mode might be
 	 *     set to something different by the programmer
