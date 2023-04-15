@@ -22,8 +22,7 @@
  * extra typing...
  */
 
-#ifndef LOG4C_DISABLE
-
+#if !defined(LOG4C_RELEASE) && !defined(LOG4C_DISABLE)
 #define log_notag(...) _log(LOG_NOTAG, __LINE__, __FILE__, __VA_ARGS__)
 #define log_ok(...) _log(LOG_OK, __LINE__, __FILE__, __VA_ARGS__)
 #define log_trace(...) _log(LOG_TRACE, __LINE__, __FILE__, __VA_ARGS__)
@@ -32,18 +31,9 @@
 #define log_warn(...)  _log(LOG_WARN, __LINE__, __FILE__, __VA_ARGS__)
 #define log_error(...) _log(LOG_ERROR, __LINE__, __FILE__, __VA_ARGS__)
 #define log_fatal(...) _log(LOG_FATAL, __LINE__, __FILE__, __VA_ARGS__)
+#endif
 
-#elif defined(LOG4C_RELEASE)
-
-#define log_notag(...)
-#define log_ok(...)
-#define log_trace(...)
-#define log_debug(...)
-#define log_info(...)
-#define log_warn(...)
-
-#else
-
+#if defined(LOG4C_DISABLE) && !defined(LOG4C_RELEASE)
 #define log_notag(...)
 #define log_ok(...)
 #define log_trace(...)
@@ -52,7 +42,43 @@
 #define log_warn(...)
 #define log_error(...)
 #define log_fatal(...)
+#endif
 
+/* Disable all messages expect error, fatal */
+#if defined(LOG4C_RELEASE) && !defined(LOG4C_DISABLE)
+#define log_notag(...)
+#define log_ok(...)
+#define log_trace(...)
+#define log_debug(...)
+#define log_info(...)
+#define log_warn(...)
+#define log_error(...) _log(LOG_ERROR, __LINE__, __FILE__, __VA_ARGS__)
+#define log_fatal(...) _log(LOG_FATAL, __LINE__, __FILE__, __VA_ARGS__)
+#endif
+
+#ifdef LOG4C_DISABLE_NOTAG
+#define log_notag(...)
+#endif
+#ifdef LOG4C_DISABLE_OK
+#define log_warn(...)
+#endif
+#ifdef LOG4C_DISABLE_TRACE
+#define log_trace(...)
+#endif
+#ifdef LOG4C_DISABLE_DEBUG
+#define log_debug(...)
+#endif
+#ifdef LOG4C_DISABLE_INFO
+#define log_info(...)
+#endif
+#ifdef LOG4C_DISABLE_WARN
+#define log_warn(...)
+#endif
+#ifdef LOG4C_DISABLE_ERROR
+#define log_error(...)
+#endif
+#ifdef LOG4C_DISABLE_FATAL
+#define log_fatal(...)
 #endif
 
 #ifdef __cplusplus
@@ -174,6 +200,8 @@ inline static void _log_handle_config(int level, int *scoped_level)
 }
 
 #if !defined (_MSC_VER)
+
+/* UNIX version of logging function */
 static void _log(int level, int line, const char* file_name, const char* args, ...)
 {
 	int scoped_level;
@@ -190,9 +218,8 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	va_start(variadic_list, args);
 	date[strftime(date, sizeof(date), "%H:%M:%S", current_time)] = '\0';
 
-#ifdef LOG4C_RELEASE
 
-#else
+#if !defined(LOG4C_RELEASE)
 #if !defined(LOG4C_DISABLE_COLOR)
 	fprintf(_log_global_settings.terminal_descriptor, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
 		date, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
@@ -206,8 +233,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	vfprintf(_log_global_settings.terminal_descriptor, args, variadic_list);
 	putc('\n', _log_global_settings.terminal_descriptor);
 
-#if defined LOG4C_RELEASE
-#else
+#if !defined LOG4C_RELEASE
 	if (_log_global_settings.file_descriptor) {
 		va_list file_list;
 		va_copy(file_list, variadic_list);
@@ -241,6 +267,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 
 #else
 
+/* Win32 version of logging function */
 static void _log(int level, int line, const char* file_name, const char* args, ...)
 {
 	int scoped_level;
@@ -254,6 +281,7 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	GetLocalTime(&LocalTime);
 
 
+#if !defined(LOG4C_RELEASE)
 #if !defined(LOG4C_DISABLE_COLOR)
 	fprintf(_log_global_settings.terminal_descriptor, "%d:%d:%d %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
 		LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
@@ -261,18 +289,20 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	fprintf(_log_global_settings.terminal_descriptor, "%s %-5s %s:%d ", date, _log_level_strings[scoped_level],
 		file_name, line);
 #endif
+#endif
 
 	/* Print string */
-#ifdef LOG4C_RELEASE
-#else
+	vfprintf(_log_global_settings.terminal_descriptor, args, variadic_list);
+	putc('\n', _log_global_settings.terminal_descriptor);
+
+#if !defined(LOG4C_RELEASE)
 	vfprintf(_log_global_settings.terminal_descriptor, args, variadic_list);
 	putc('\n', _log_global_settings.terminal_descriptor);
 
 	fflush(_log_global_settings.terminal_descriptor);
 #endif
 
-#if defined LOG4C_RELEASE
-#else
+#if !defined(LOG4C_RELEASE)
 	if (_log_global_settings.file_descriptor) {
 		va_list file_list;
 		va_copy(file_list, variadic_list);
@@ -288,7 +318,6 @@ static void _log(int level, int line, const char* file_name, const char* args, .
 	if (_log_global_settings.thread_safe_initialized) {
 		LeaveCriticalSection(&_log_global_settings.mutex);
 	}
-
 }
 
 #endif

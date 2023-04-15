@@ -13,6 +13,9 @@ If ```LOG4C_RELEASE``` is defined, only enable ```log_error``` and ```log_fatal`
 disable printing line number, date etc.. Only prints arguments passed to these functions.
 This mode disables logging to a file.
 
+Each level of logs can be disabled with ```LOG4C_DISABLE_<NAME_OF_LOG_LEVEL>``` macro, Example:
+```#define LOG4C_DISABLE_TRACE```
+
 Preferance
 ```cpp
 #define LOG4C_DISABLE_COLOR      /* Disable error codes to be printed with VT colors */
