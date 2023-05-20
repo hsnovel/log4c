@@ -1,6 +1,6 @@
 # log4c
 
-log4c is a single header thread safe fast logging library for C and C++.
+log4c is a simple thread safe fast logging library for C and C++.
 
 ![sreenshot](https://user-images.githubusercontent.com/53369750/215074252-5ad1e9aa-71ad-49e6-9809-bf18d4a7b6bf.png)
 
@@ -12,9 +12,12 @@ If you want to disable logging define ```LOG4C_DISABLE``` before including the l
 Each level of logs can be disabled with ```LOG4C_DISABLE_<NAME_OF_LOG_LEVEL>``` macro, Example:
 ```#define LOG4C_DISABLE_TRACE```
 
-Preferance
+You can use this preprocessor variables to control how library works. Do not
+#define these, instead specify them to the compiler like `-DLOG4C_RELEASE`
+otherwise these macros will probably not work.
 ```cpp
-#define LOG4C_ENABLE_BOLD_COLORS /* Works only if LOG4C_DISABLE_COLOR is not set */
+LOG4C_ENABLE_BOLD_COLORS /* Works only if LOG4C_DISABLE_COLOR is not set */
+LOG4C_RELEASE /* Disables printing file properties and time */
 ```
 
 Logging functions
@@ -29,7 +32,7 @@ log_error(...);
 log_fatal(...);
 ```
 
-Thread safety
+Thread safety, which is not enabled by default.
 ```cpp
 log_enable_thread_safe();   /* Enables thread safety globally  */
 log_disable_thread_safe();  /* Disables thread safety globally */
