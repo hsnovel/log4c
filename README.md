@@ -9,16 +9,11 @@ log4c is a single header thread safe fast logging library for C and C++.
 Do not put "\n" at the end of the logging functions, they are added by default. \
 If you want to disable logging define ```LOG4C_DISABLE``` before including the library.
 
-If ```LOG4C_RELEASE``` is defined, only enable ```log_error``` and ```log_fatal``` functions,
-disable printing line number, date etc.. Only prints arguments passed to these functions.
-This mode disables logging to a file.
-
 Each level of logs can be disabled with ```LOG4C_DISABLE_<NAME_OF_LOG_LEVEL>``` macro, Example:
 ```#define LOG4C_DISABLE_TRACE```
 
 Preferance
 ```cpp
-#define LOG4C_DISABLE_COLOR      /* Disable error codes to be printed with VT colors */
 #define LOG4C_ENABLE_BOLD_COLORS /* Works only if LOG4C_DISABLE_COLOR is not set */
 ```
 
@@ -59,3 +54,11 @@ log_append_file(const char *path);
 log_append_fp(FILE *file_descriptor);
 log_detach_fp(); /* Remove file descriptor. Disable logging to file. */
 ```
+
+## Note
+Recently I changed a lot of code and didn't have any time to check if it works on Windows.
+If the current version doesn't work on Windows please revert back to this [b56416ff26198a3d7d2fd803a7a6245aff6e5ded](https://github.com/xcatalyst/log4c/commit/b56416ff26198a3d7d2fd803a7a6245aff6e5ded) commit.
+
+I also removed couple of features like being able to disable colors. I find it
+to be really useless as almost all the terminals are able to print the colors
+without a problem.
