@@ -1,5 +1,14 @@
 #include "log4c.h"
 
+#include <stdarg.h>
+#include <time.h>
+#ifdef _MSC_VER
+#include <windows.h>
+#else
+#include <errno.h>
+#include <pthread.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -2,25 +2,6 @@
 #define LOG4C_H
 
 #include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-#ifdef _MSC_VER
-#include <windows.h>
-#else
-#include <errno.h>
-#include <pthread.h>
-#endif
-
-/*
- * LOG4C_ENABLE_BOLD_COLORS -> Enable bold colors
- */
-
-/*
- * Cannot get line numbers inside functions without specifiying them as
- * an argument in the function call. You have to #define them otherwise
- * you have to pass __LINE__ and __FILE__ to functions which is an
- * extra typing...
- */
 
 enum { LOG_NOTAG, LOG_OK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 
@@ -34,6 +15,12 @@ void log_append_fp(FILE* file_descriptor);
 void log_detach_fp();
 int log_append_file(const char *path);
 
+/*
+ * Cannot get line numbers inside functions without specifiying them as
+ * an argument in the function call. You have to #define them otherwise
+ * you have to pass __LINE__ and __FILE__ to functions which is an
+ * extra typing...
+ */
 
 #ifdef LOG4C_DISABLE_NOTAG
 #define log_notag(...)
