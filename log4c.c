@@ -25,7 +25,7 @@ static struct {
 #endif
 	unsigned int thread_safe_initialized;
 } _log_global_settings = {
-	.level = LOG_NOTAG,
+	.level = LOG4C_NOTAG,
 	.quiet = 0,
 	.terminal_descriptor = 0,
 	.file_descriptor = 0,
