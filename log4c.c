@@ -36,13 +36,19 @@ static const char* _log_level_strings[] = {
 	"NOTAG", "OK", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
 };
 
-#if defined(LOG4C_ENABLE_BOLD_COLORS)
+#if defined(LOG4C_ENABLE_BOLD_COLORS) && !defined(LOG4C_DISABLE_COLORS)
 static const char* _log_level_colors[] = {
 	"\x1b[1;39m", "\x1b[1;32m", "\x1b[1;35m", "\x1b[1;34m", "\x1b[1;32m", "\x1b[1;33m", "\x1b[1;31m", "\x1b[1;31m"
 };
-#else
+#elif !defined(LOG4C_DISABLE_COLORS)
 static const char* _log_level_colors[] = {
 	"\x1b[39m", "\x1b[32m", "\x1b[35m", "\x1b[34m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[31m"
+};
+#endif
+
+#if defined (LOG4C_DISABLE_COLORS)
+static const char* _log_level_colors[] = {
+	"\033[0m", "\033[0m", "\033[0m", "\033[0m", "\033[0m", "\033[0m", "\033[0m", "\033[0m"
 };
 #endif
 

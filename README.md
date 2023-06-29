@@ -18,6 +18,7 @@ otherwise these macros will probably not work.
 ```cpp
 LOG4C_ENABLE_BOLD_COLORS /* Works only if LOG4C_DISABLE_COLOR is not set */
 LOG4C_RELEASE /* Disables printing file properties and time */
+LOG4C_DISABLE_COLORS /* Disable all colors for log information names */
 ```
 
 Logging functions
