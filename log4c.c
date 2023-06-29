@@ -136,12 +136,19 @@ static inline void _log_print_file_info(FILE *fd, int scoped_level, int line, co
 	char date[16];
 	current_time = localtime(&tx);
 	date[strftime(date, sizeof(date), "%H:%M:%S", current_time)] = '\0';
-
 #if !defined(LOG4C_RELEASE)
-	fprintf(fd, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
-		date, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
+	if (scoped_level == LOG4C_NOTAG) {
+		fprintf(fd, "%s \x1b[90m%s:%d:\x1b[0m",
+		date, file_name, line);
+
+	} else {
+		fprintf(fd, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
+			date, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
+	}
 #else
-	fprintf(fd, "%s%s: \x1b[0m", _log_level_colors[scoped_level], _log_level_strings[scoped_level]);
+	if (scoped_level != LOG4C_NOTAG) {
+		fprintf(fd, "%s%s: \x1b[0m", _log_level_colors[scoped_level], _log_level_strings[scoped_level]);
+	}
 #endif
 
 #else /************** WINDOWS **************/
@@ -150,10 +157,18 @@ static inline void _log_print_file_info(FILE *fd, int scoped_level, int line, co
 
 
 #if !defined(LOG4C_RELEASE)
-	fprintf(fd, "%d:%d:%d %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
-		LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
+	if (scoped_level == LOG4C_NOTAG) {
+		fprintf(fd, "%d:%d:%d \x1b[90m%s:%d:\x1b[0m",
+			LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, file_name, line);
+	} else {
+		fprintf(fd, "%d:%d:%d %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m",
+			LocalTime.wHour, LocalTime.wMinute, LocalTime.wSecond, _log_level_colors[scoped_level], _log_level_strings[scoped_level], file_name, line);
+
+	}
 #else
-	fprintf(fd, "%s%s \x1b[0m", _log_level_colors[scoped_level], _log_level_strings[scoped_level]);
+	if (scoped_level != LOG4C_NOTAG) {
+		fprintf(fd, "%s%s \x1b[0m", _log_level_colors[scoped_level], _log_level_strings[scoped_level]);
+	}
 #endif
 
 #endif /* _MSC_VER */
