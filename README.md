@@ -1,3 +1,5 @@
+# [THIS PROJECT IS MOVED TO STD](https://github.com/xcatalyst/std)
+
 # log4c
 
 log4c is a simple thread safe fast logging library for C and C++.
